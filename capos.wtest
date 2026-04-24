@@ -1,0 +1,237 @@
+import capos.*
+import castillo.*
+import erethia.*
+import artefactos.*
+
+describe "Test de rolando" {
+    // rolando ya tiene capacidad en mochila 2 y su hogar es castillo
+  test "Rolando con capacidad en mochila recolecta un artefacto" {
+    rolando.encontrar(espadaDelDestino)
+
+    assert.that(rolando.elementosMochila().contains(espadaDelDestino))
+  }
+  test "Rolando sin capacidad en mochila no puede recolectar"{
+    rolando.encontrar(espadaDelDestino)
+    rolando.encontrar(collarDivino)
+
+    rolando.encontrar(armaduraDeAcero)
+
+    assert.equals(rolando.elementosMochila().size(), 2)
+  }
+  test "Rolando agranda su mochila"{
+    rolando.capacidadMochila(5)
+
+    assert.equals(rolando.capacidadMochila(), 5)
+  }
+  test "Rolando sabe que artefactos tiene en la mochila"{
+    rolando.encontrar(collarDivino)
+    rolando.encontrar(espadaDelDestino)
+
+    assert.equals(rolando.elementosMochila(), #{espadaDelDestino, collarDivino})
+  }
+  test "Rolando llega a su hogar y guarda los artefactos"{
+    rolando.encontrar(espadaDelDestino)
+    rolando.encontrar(collarDivino)
+
+    rolando.llegarA(castillo)
+
+    assert.that(rolando.elementosMochila().isEmpty() && 
+    castillo.artefactosGuardados() == #{espadaDelDestino, collarDivino})
+
+  }
+  /*test "Artefactos del hogar de rolando"{
+    rolando.encontrar(espadaDelDestino)
+    rolando.encontrar(collarDivino)
+    rolando.llegarA(castillo)
+
+    assert.equals(rolando.hogar().artefactosGuardados(),#{espadaDelDestino, collarDivino})
+  }*/ 
+  test "Posesiones de rolando"{
+    rolando.encontrar(espadaDelDestino)
+    rolando.encontrar(collarDivino)
+    rolando.llegarA(castillo)
+    rolando.encontrar(armaduraDeAcero)
+
+    assert.equals(rolando.artefactosRecolectados(), #{espadaDelDestino, collarDivino, armaduraDeAcero})
+  }
+  test "Ronaldo sabe si tiene un artefacto en especial" {
+    rolando.encontrar(espadaDelDestino)
+
+    assert.that(rolando.contiene(espadaDelDestino))
+  }
+  test "Rolando sabe si no tiene un artefacto en especial" {
+    assert.notThat(rolando.contiene(espadaDelDestino))
+  }
+  test "Rolando sabe todos los artefactos que fue encontrando aunque no los haya recolectado"{
+    rolando.encontrar(espadaDelDestino)
+    rolando.encontrar(collarDivino)
+    rolando.encontrar(armaduraDeAcero)
+    rolando.llegarA(castillo)
+    rolando.encontrar(libroDeHechizos)
+    rolando.encontrar(armaduraDeAcero)
+
+    assert.equals(rolando.artefactosEncontrados(), [espadaDelDestino, collarDivino, armaduraDeAcero, libroDeHechizos, armaduraDeAcero])
+  }
+  test "Poder de pelea" {
+    rolando.poderBase(5)
+    rolando.encontrar(armaduraDeAcero)
+
+    assert.equals(rolando.poderDePelea(), rolando.poderBase()+armaduraDeAcero.poderDePeleaPara(rolando))
+  }
+
+}
+describe "Castillo test" {
+  test "Artefactos guardados" {
+    rolando.encontrar(espadaDelDestino)
+    rolando.encontrar(collarDivino)
+    rolando.llegarA(castillo)
+
+    assert.equals(castillo.artefactosGuardados(), #{espadaDelDestino, collarDivino})
+  }
+}
+describe "Artefactos test" {
+  test "Espada del destino, la primera vez aporta el mismo poder que tiene rolando" {
+    rolando.poderBase(5)
+
+    assert.equals(espadaDelDestino.poderDePeleaPara(rolando), rolando.poderBase())
+  }
+  test "Espada del destino, una vez usada aporta la mitad de poder que tiene rolando"{
+    rolando.poderBase(5)
+    rolando.encontrar(espadaDelDestino)
+    rolando.pelearBatalla()
+
+    assert.equals(espadaDelDestino.poderDePeleaPara(rolando), rolando.poderBase()/2)
+  }
+  test "Collar divino, aporta 3 puntos si ronaldo tiene poder menor o igual a 6"{
+  rolando.poderBase(5)
+  
+  assert.equals(collarDivino.poderDePeleaPara(rolando), 3)
+}
+  test "Collar divino sin uso, con rolando teniendo poder base mayor a 6, aporta 3"{
+    rolando.poderBase(10)
+    
+    assert.equals(collarDivino.poderDePeleaPara(rolando), 3)
+  }
+  test "Collar divino usado 2veces, con rolando poderBase > 6, aporta 5"{
+    rolando.poderBase(10)
+    rolando.encontrar(collarDivino)
+    rolando.pelearBatalla()
+    rolando.pelearBatalla()
+
+    assert.equals(collarDivino.poderDePeleaPara(rolando), 5)
+  }
+  test "Armadura de acero valyrio, aporta 6 siempre" {
+    assert.equals(armaduraDeAcero.poderDePeleaPara(rolando),6)
+  }
+  test "Bendicion, aporta 4"{
+    assert.equals(bendicion.poderDePeleaPara(rolando), 4)
+  }
+  test "invisibilidad, aporta lo mismo que rolando"{
+    rolando.poderBase(5)
+
+    assert.equals(invisibilidad.poderDePeleaPara(rolando), rolando.poderBase())
+  }
+  test "Invocacion, aporta lo mismo que el artefacto mas poderoso que rolando tiene en su morada"{
+    rolando.encontrar(espadaDelDestino)
+    rolando.encontrar(armaduraDeAcero)
+    rolando.llegarA(castillo)
+    rolando.poderBase(5)
+
+    assert.equals(invocacion.poderDePeleaPara(rolando), 6)
+  }
+  test "invocacion, no aporta nada porque rolando no tiene nada en su morada"{
+
+    assert.equals(invocacion.poderDePeleaPara(rolando), 0)
+  }
+  test "Invocacion, no produce ningun efecto en el artefacto invocado"{
+    rolando.poderBase(10)
+    rolando.encontrar(espadaDelDestino)
+    rolando.llegarA(castillo)
+    libroDeHechizos.hechizoNuevo(invocacion)
+    rolando.encontrar(libroDeHechizos)
+
+    rolando.pelearBatalla()
+
+    assert.equals(espadaDelDestino.poderDePeleaPara(rolando),rolando.poderBase())
+  }
+  test "Libro de hechizos, se usa de a uno y se  elimina el usado dsp de cada batalla"{
+    libroDeHechizos.hechizoNuevo(bendicion)
+    libroDeHechizos.hechizoNuevo(invisibilidad)
+    libroDeHechizos.hechizoNuevo(invocacion)
+    rolando.encontrar(libroDeHechizos)
+    rolando.pelearBatalla()
+    rolando.pelearBatalla()
+    rolando.pelearBatalla()
+
+    assert.that(libroDeHechizos.hechizos().isEmpty())
+  }// no corre cuando lo pruebo por si solo, solo pasa cuando ejecuto todos los codigos !!??
+}
+describe "Erethia" {
+  test "Rolando sabe cuales son los enemigos que puede vender"{
+    rolando.poderBase(5)
+    rolando.capacidadMochila(3)
+    rolando.encontrar(espadaDelDestino)
+    rolando.encontrar(armaduraDeAcero)
+    rolando.encontrar(collarDivino)
+
+    assert.equals(rolando.enemigosAGanarDe(erethia), #{archibaldo, astra})
+  }
+  test "Rolando no tiene enemigos que puede vender" {
+    rolando.poderBase(5)
+
+    assert.that(rolando.enemigosAGanarDe(erethia).isEmpty())
+  }
+  test "Rolando sabe que moradas puede conquistar" {
+    rolando.poderBase(5)
+    rolando.capacidadMochila(3)
+    rolando.encontrar(espadaDelDestino)
+    rolando.encontrar(armaduraDeAcero)
+    rolando.encontrar(collarDivino)
+
+    assert.equals(rolando.moradasAConquistar(erethia), ["palacioDeMarmol", "torreDeMarfil"])
+  }
+  test "Rolando no tiene moradas que puede conquistar" {
+    rolando.poderBase(5)
+
+    assert.equals(rolando.moradasAConquistar(erethia), [])
+  }
+  test "Rolado sabe que no poderoso en un lugar"{
+    rolando.poderBase(5)
+    rolando.capacidadMochila(3)
+    rolando.encontrar(espadaDelDestino)
+    rolando.encontrar(armaduraDeAcero)
+    rolando.encontrar(collarDivino)
+
+    assert.notThat(rolando.poderosoEn(erethia))
+  }
+  test "Rolado sabe si es poderoso en un lugar"{
+    rolando.poderBase(10)
+    rolando.capacidadMochila(3)
+    rolando.encontrar(espadaDelDestino)
+    rolando.encontrar(armaduraDeAcero)
+    rolando.encontrar(collarDivino)
+
+    assert.that(rolando.poderosoEn(erethia))
+  }
+  test "Rolando sabe si tiene un artefacto fatal para derrotar a un enemigo"{
+    rolando.poderBase(15)
+    rolando.encontrar(espadaDelDestino)
+
+    assert.that(rolando.artefactoFatalContra(astra))
+  }
+  test "Rolando sabe cual es el artefacto fatal para derrotar a un enemigo"{
+    rolando.poderBase(15)
+    rolando.encontrar(espadaDelDestino)
+    rolando.encontrar(armaduraDeAcero)
+
+    assert.equals(rolando.artefactoFatalPara(astra), espadaDelDestino)
+  }
+    test "Rolando sabe si no tiene un artefacto fatal para derrotar a un enemigo"{
+    rolando.poderBase(15)
+    rolando.encontrar(espadaDelDestino)
+
+    assert.notThat(rolando.artefactoFatalContra(caterina))
+  }
+
+}
+

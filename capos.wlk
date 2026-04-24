@@ -19,6 +19,9 @@ object rolando{
     method capacidadMochila(_capacidadMochila) {
       capacidadMochila = _capacidadMochila
     }
+    method capacidadMochila() {
+      return capacidadMochila
+    }
     method verificarMochila() {
         return mochila.size() < capacidadMochila
     }
@@ -33,6 +36,9 @@ object rolando{
     //1.3
     const hogar = castillo
 
+    method hogar(){
+        return hogar
+    }
     method artefactosRecolectados() {
       return mochila.union(hogar.artefactosGuardados())
     }
