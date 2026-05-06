@@ -4,6 +4,12 @@ object erethia {
     method enemigos() {
       return enemigos
     }
+    method enemigosGanablesPara(personaje){
+      return enemigos.filter({enemigo => enemigo.debilCon(personaje)})
+    }
+    method esEnemigoPoderoso(personaje) {
+      return enemigos.all({enemigo => enemigo.debilCon(personaje)})
+    }
   
 }
 object caterina {
@@ -12,7 +18,7 @@ object caterina {
       return 28
     }
     method morada() {
-      return "fortalezaDeAcero"
+      return fortalezaDeAcero
     }
     method debilCon(enemigo) {
         return self.poderDePelea() < enemigo.poderDePelea()
@@ -23,7 +29,7 @@ object archibaldo {
       return 16
     }
     method morada() {
-      return "palacioDeMarmol"
+      return palacioDeMarmol
     }
     method debilCon(enemigo) {
         return self.poderDePelea() < enemigo.poderDePelea()
@@ -34,9 +40,18 @@ object astra {
       return 14
     }
     method morada() {
-      return "torreDeMarfil"
+      return torreDeMarfil
     }
     method debilCon(enemigo) {
         return self.poderDePelea() < enemigo.poderDePelea()
     }
+}
+object palacioDeMarmol {
+  
+}
+object fortalezaDeAcero {
+  
+}
+object torreDeMarfil {
+  
 }

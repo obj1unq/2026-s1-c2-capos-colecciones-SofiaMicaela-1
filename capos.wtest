@@ -33,7 +33,7 @@ describe "Test de rolando" {
     rolando.encontrar(espadaDelDestino)
     rolando.encontrar(collarDivino)
 
-    rolando.llegarA(castillo)
+    rolando.llegarAHogar()
 
     assert.that(rolando.elementosMochila().isEmpty() && 
     castillo.artefactosGuardados() == #{espadaDelDestino, collarDivino})
@@ -49,7 +49,7 @@ describe "Test de rolando" {
   test "Posesiones de rolando"{
     rolando.encontrar(espadaDelDestino)
     rolando.encontrar(collarDivino)
-    rolando.llegarA(castillo)
+    rolando.llegarAHogar()
     rolando.encontrar(armaduraDeAcero)
 
     assert.equals(rolando.artefactosRecolectados(), #{espadaDelDestino, collarDivino, armaduraDeAcero})
@@ -66,7 +66,7 @@ describe "Test de rolando" {
     rolando.encontrar(espadaDelDestino)
     rolando.encontrar(collarDivino)
     rolando.encontrar(armaduraDeAcero)
-    rolando.llegarA(castillo)
+    rolando.llegarAHogar()
     rolando.encontrar(libroDeHechizos)
     rolando.encontrar(armaduraDeAcero)
 
@@ -84,7 +84,7 @@ describe "Castillo test" {
   test "Artefactos guardados" {
     rolando.encontrar(espadaDelDestino)
     rolando.encontrar(collarDivino)
-    rolando.llegarA(castillo)
+    rolando.llegarAHogar()
 
     assert.equals(castillo.artefactosGuardados(), #{espadaDelDestino, collarDivino})
   }
@@ -134,19 +134,19 @@ describe "Artefactos test" {
   test "Invocacion, aporta lo mismo que el artefacto mas poderoso que rolando tiene en su morada"{
     rolando.encontrar(espadaDelDestino)
     rolando.encontrar(armaduraDeAcero)
-    rolando.llegarA(castillo)
+    rolando.llegarAHogar()
     rolando.poderBase(5)
 
     assert.equals(invocacion.poderDePeleaPara(rolando), 6)
   }
   test "invocacion, no aporta nada porque rolando no tiene nada en su morada"{
 
-    assert.equals(invocacion.poderDePeleaPara(rolando), 0)
+    assert.throwsException({invocacion.poderDePeleaPara(rolando)})
   }
   test "Invocacion, no produce ningun efecto en el artefacto invocado"{
     rolando.poderBase(10)
     rolando.encontrar(espadaDelDestino)
-    rolando.llegarA(castillo)
+    rolando.llegarAHogar()
     libroDeHechizos.hechizoNuevo(invocacion)
     rolando.encontrar(libroDeHechizos)
 
@@ -188,7 +188,7 @@ describe "Erethia" {
     rolando.encontrar(armaduraDeAcero)
     rolando.encontrar(collarDivino)
 
-    assert.equals(rolando.moradasAConquistar(erethia), ["palacioDeMarmol", "torreDeMarfil"])
+    assert.equals(rolando.moradasAConquistar(erethia), [palacioDeMarmol, torreDeMarfil])
   }
   test "Rolando no tiene moradas que puede conquistar" {
     rolando.poderBase(5)
@@ -217,7 +217,7 @@ describe "Erethia" {
     rolando.poderBase(15)
     rolando.encontrar(espadaDelDestino)
 
-    assert.that(rolando.artefactoFatalContra(astra))
+    assert.that(rolando.existeArtefactoFatalContra(astra))
   }
   test "Rolando sabe cual es el artefacto fatal para derrotar a un enemigo"{
     rolando.poderBase(15)
@@ -230,7 +230,7 @@ describe "Erethia" {
     rolando.poderBase(15)
     rolando.encontrar(espadaDelDestino)
 
-    assert.notThat(rolando.artefactoFatalContra(caterina))
+    assert.notThat(rolando.existeArtefactoFatalContra(caterina))
   }
 
 }

@@ -29,8 +29,8 @@ object rolando{
         return mochila
     }
     // 1.2
-    method llegarA(lugar) {
-        lugar.guardarArtefactos(mochila)
+    method llegarAHogar() {
+        hogar.guardarArtefactos(mochila)
         mochila.clear()
     }
     //1.3
@@ -60,11 +60,18 @@ object rolando{
     }
 
     method poderDePelea() {
-        return poderBase + mochila.sum({artefacto => artefacto.poderDePeleaPara(self)})
+        return poderBase + self.poderArtefactosTotal()
+    }
+    method poderArtefactosTotal() {
+        return mochila.sum({artefacto => artefacto.poderDePeleaPara(self)})
     }
     method pelearBatalla(){
         //self.poderBase(1+poderBase)
+        self.usarArtefactosEnMochila()
         self.aumentarPoderBase()
+    
+    }
+    method usarArtefactosEnMochila() {
         mochila.forEach({elemento => elemento.usar()})
     }
     method aumentarPoderBase() {
@@ -72,40 +79,35 @@ object rolando{
     }
     // 2.2
     method artefactoMasValiosoEnHogar() {
-        if (hogar.artefactosGuardados().isEmpty()){
-            return null
-        }
-        else {
-            return hogar.artefactosGuardados().max({elemento => elemento.poderDePeleaPara(self)})
-        }
+       return hogar.elArtefactoMasValiosoPara(self)
     }
     // 2.3
     method enemigosAGanarDe(lugar) {
-        const enemigos = lugar.enemigos()
+
+        return lugar.enemigosGanablesPara(self)
+
+        /*const enemigos = lugar.enemigos()
         return enemigos.filter({enemigo => enemigo.debilCon(self)})
-    }
+   */ }
     method moradasAConquistar(lugar) {
         return self.enemigosAGanarDe(lugar).map({enemigo => enemigo.morada()})
       
-    }
+    } 
     // 2.4
     method poderosoEn(lugar) {
-        const enemigos = lugar.enemigos()
-        return enemigos.all({enemigo => enemigo.debilCon(self)})
+        return lugar.esEnemigoPoderoso(self)
+        /*const enemigos = lugar.enemigos()
+        return enemigos.all({enemigo => enemigo.debilCon(self)})*/
     }
     // 2.5
-    method artefactoFatalContra(enemigo) {
+    method existeArtefactoFatalContra(enemigo) {
         // Retorna si existe algun elemento fatal para el enemigo dado
         return self.artefactosRecolectados().any({elemento => elemento.letalDePara(self,enemigo)})
     }
     method artefactoFatalPara(enemigo) {
         // Si existe artefacto letal para el enemigo dado, nos lo retorna
-        if (self.artefactoFatalContra(enemigo)){
-            return self.artefactosRecolectados().find({elemento => elemento.letalDePara(self,enemigo)})
-        }
-        else {
-            return "No hay artefacto letal"
-        }
+        return self.artefactosRecolectados().find({elemento => elemento.letalDePara(self,enemigo)})
+    
     }
 
 }

@@ -55,11 +55,13 @@ object invisibilidad {
 }
 object invocacion {
     method poderDePeleaPara(personaje) {
-        const artefacto = personaje.artefactoMasValiosoEnHogar()
+        return personaje.artefactoMasValiosoEnHogar().poderDePeleaPara(personaje)
+        /*const artefacto = personaje.artefactoMasValiosoEnHogar()
         if (artefacto != null){
         return artefacto.poderDePeleaPara(personaje)
         }
         else {return 0}
+        */
     }
     // aca en vez de fijarme que no este vacio deberia hacer que si esta vacio 
     // tire un error tipo "No hay artefactos en hogar" ? o lo mismo pero en artefactoMasValiosoEnHogar()
